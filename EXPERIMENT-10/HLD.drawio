@@ -1,0 +1,589 @@
+<mxfile host="app.diagrams.net" agent="Antigravity" version="26.0">
+  <diagram id="pastectl-system-design" name="PasteCTL System Design">
+    <mxGraphModel dx="2800" dy="2400" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="4400" pageHeight="3400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- ============================================== -->
+        <!-- MAIN TITLE BANNER                              -->
+        <!-- ============================================== -->
+        <mxCell id="title-bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#16213e;arcSize=8;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="4360" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="title-text" value="&lt;font style=&quot;font-size:32px;font-weight:bold;color:#e94560;&quot;&gt;📋 PasteCTL — System Design&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:14px;color:#a7a7c4;&quot;&gt;A modern code snippet sharing platform with syntax highlighting, live collaborative editing, and expirable pastes&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="4360" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================== -->
+        <!-- SECTION 1: AIM / DESCRIPTION                   -->
+        <!-- ============================================== -->
+        <mxCell id="aim-header" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0f3460;strokeColor=#16213e;arcSize=12;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="140" width="1400" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="aim-header-text" value="&lt;font style=&quot;font-size:18px;font-weight:bold;color:#e94560;&quot;&gt;🎯 AIM / DESCRIPTION&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="20" y="140" width="1400" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="aim-body" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#16213e;strokeColor=#1a1a2e;arcSize=8;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="190" width="1400" height="260" as="geometry" />
+        </mxCell>
+        <mxCell id="aim-content" value="&lt;div style=&quot;text-align:left;padding:15px;color:#e0e0e0;font-size:13px;line-height:1.8;&quot;&gt;&#xa;&lt;b style=&quot;color:#00d2ff;font-size:14px;&quot;&gt;PasteCTL&lt;/b&gt; is a lightweight, modern pastebin alternative designed for developers.&#xa;&lt;br&gt;&lt;br&gt;&#xa;&lt;b style=&quot;color:#e94560;&quot;&gt;Problem:&lt;/b&gt; Developers need a fast, reliable way to share code snippets with proper syntax&#xa;highlighting, configurable expiry, and real-time collaboration — without the bloat of full&#xa;IDE sharing tools.&#xa;&lt;br&gt;&lt;br&gt;&#xa;&lt;b style=&quot;color:#e94560;&quot;&gt;Solution:&lt;/b&gt; A full-stack platform with:&#xa;&lt;br&gt;• &lt;b style=&quot;color:#53d769;&quot;&gt;Next.js frontend&lt;/b&gt; deployed on AWS Amplify for a fast, responsive UI&#xa;&lt;br&gt;• &lt;b style=&quot;color:#53d769;&quot;&gt;Go (Gin) backend&lt;/b&gt; deployed on AWS EC2 for high-performance API serving&#xa;&lt;br&gt;• &lt;b style=&quot;color:#53d769;&quot;&gt;PostgreSQL&lt;/b&gt; for persistent paste storage with connection pooling (pgx)&#xa;&lt;br&gt;• &lt;b style=&quot;color:#53d769;&quot;&gt;WebSocket (Gorilla)&lt;/b&gt; for real-time collaborative editing&#xa;&lt;br&gt;• &lt;b style=&quot;color:#53d769;&quot;&gt;CLI tool (pasteCTL)&lt;/b&gt; for terminal-native workflows&#xa;&lt;br&gt;• &lt;b style=&quot;color:#53d769;&quot;&gt;Sliding window rate limiter&lt;/b&gt; for API abuse protection&#xa;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="30" y="200" width="1380" height="240" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================== -->
+        <!-- SECTION 2: FUNCTIONAL REQUIREMENTS             -->
+        <!-- ============================================== -->
+        <mxCell id="fr-header" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0f3460;strokeColor=#16213e;arcSize=12;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="1460" y="140" width="1420" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="fr-header-text" value="&lt;font style=&quot;font-size:18px;font-weight:bold;color:#e94560;&quot;&gt;✅ FUNCTIONAL REQUIREMENTS&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1460" y="140" width="1420" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="fr-body" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#16213e;strokeColor=#1a1a2e;arcSize=8;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="1460" y="190" width="1420" height="260" as="geometry" />
+        </mxCell>
+        <mxCell id="fr-content" value="&lt;div style=&quot;text-align:left;padding:15px;color:#e0e0e0;font-size:13px;line-height:1.9;&quot;&gt;&#xa;&lt;b style=&quot;color:#00d2ff;&quot;&gt;FR-1&lt;/b&gt; &amp;nbsp; Users can &lt;b&gt;create a new paste&lt;/b&gt; with content, language, and optional expiry (1h/24h/7d/never)&#xa;&lt;br&gt;&lt;b style=&quot;color:#00d2ff;&quot;&gt;FR-2&lt;/b&gt; &amp;nbsp; Users can &lt;b&gt;retrieve a paste&lt;/b&gt; by its unique short ID&#xa;&lt;br&gt;&lt;b style=&quot;color:#00d2ff;&quot;&gt;FR-3&lt;/b&gt; &amp;nbsp; Users can &lt;b&gt;retrieve raw content&lt;/b&gt; of a paste (for CLI / curl usage)&#xa;&lt;br&gt;&lt;b style=&quot;color:#00d2ff;&quot;&gt;FR-4&lt;/b&gt; &amp;nbsp; Users can &lt;b&gt;update paste content&lt;/b&gt; in real-time (live collaborative editing via WebSocket)&#xa;&lt;br&gt;&lt;b style=&quot;color:#00d2ff;&quot;&gt;FR-5&lt;/b&gt; &amp;nbsp; System &lt;b&gt;tracks view counts&lt;/b&gt; for each paste (incremented on page load)&#xa;&lt;br&gt;&lt;b style=&quot;color:#00d2ff;&quot;&gt;FR-6&lt;/b&gt; &amp;nbsp; System &lt;b&gt;auto-deletes expired pastes&lt;/b&gt; via a background scheduled job (every 2h)&#xa;&lt;br&gt;&lt;b style=&quot;color:#00d2ff;&quot;&gt;FR-7&lt;/b&gt; &amp;nbsp; System supports &lt;b&gt;syntax highlighting&lt;/b&gt; for 8+ languages (JS, Python, Go, Java, C, C++, SQL, Plain)&#xa;&lt;br&gt;&lt;b style=&quot;color:#00d2ff;&quot;&gt;FR-8&lt;/b&gt; &amp;nbsp; Users can &lt;b&gt;copy paste content&lt;/b&gt; to clipboard and open &lt;b&gt;raw view&lt;/b&gt; in a new tab&#xa;&lt;br&gt;&lt;b style=&quot;color:#00d2ff;&quot;&gt;FR-9&lt;/b&gt; &amp;nbsp; Users can &lt;b&gt;create/share pastes from the CLI&lt;/b&gt; (pasteCTL CLI tool)&#xa;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="1470" y="200" width="1400" height="240" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================== -->
+        <!-- SECTION 3: NON-FUNCTIONAL REQUIREMENTS         -->
+        <!-- ============================================== -->
+        <mxCell id="nfr-header" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0f3460;strokeColor=#16213e;arcSize=12;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="2920" y="140" width="1460" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="nfr-header-text" value="&lt;font style=&quot;font-size:18px;font-weight:bold;color:#e94560;&quot;&gt;⚡ NON-FUNCTIONAL REQUIREMENTS&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="2920" y="140" width="1460" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="nfr-body" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#16213e;strokeColor=#1a1a2e;arcSize=8;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="2920" y="190" width="1460" height="260" as="geometry" />
+        </mxCell>
+        <mxCell id="nfr-content" value="&lt;div style=&quot;text-align:left;padding:15px;color:#e0e0e0;font-size:13px;line-height:1.9;&quot;&gt;&#xa;&lt;b style=&quot;color:#ff6b6b;&quot;&gt;NFR-1  Availability:&lt;/b&gt; &amp;nbsp; System should have &lt;b&gt;99.9% uptime&lt;/b&gt; — deployed on AWS EC2 + Amplify&#xa;&lt;br&gt;&lt;b style=&quot;color:#ff6b6b;&quot;&gt;NFR-2  Latency:&lt;/b&gt; &amp;nbsp; API response time &lt;b&gt;&amp;lt; 100ms&lt;/b&gt; (p95) for paste CRUD operations&#xa;&lt;br&gt;&lt;b style=&quot;color:#ff6b6b;&quot;&gt;NFR-3  Scalability:&lt;/b&gt; &amp;nbsp; Connection pooling via pgx; stateless API is horizontally scalable&#xa;&lt;br&gt;&lt;b style=&quot;color:#ff6b6b;&quot;&gt;NFR-4  Security:&lt;/b&gt; &amp;nbsp; CORS whitelist, parameterized SQL queries, rate limiting (60 req/min/IP)&#xa;&lt;br&gt;&lt;b style=&quot;color:#ff6b6b;&quot;&gt;NFR-5  Durability:&lt;/b&gt; &amp;nbsp; PostgreSQL with data persistence; auto-cleanup of expired pastes&#xa;&lt;br&gt;&lt;b style=&quot;color:#ff6b6b;&quot;&gt;NFR-6  Real-Time:&lt;/b&gt; &amp;nbsp; WebSocket-based live editing with &lt;b&gt;&amp;lt; 50ms&lt;/b&gt; propagation delay&#xa;&lt;br&gt;&lt;b style=&quot;color:#ff6b6b;&quot;&gt;NFR-7  Testability:&lt;/b&gt; &amp;nbsp; Testcontainers for integration tests; interface-based DI&#xa;&lt;br&gt;&lt;b style=&quot;color:#ff6b6b;&quot;&gt;NFR-8  Maintainability:&lt;/b&gt; &amp;nbsp; Clean MVC layered architecture (Handler → Service → Repository)&#xa;&lt;br&gt;&lt;b style=&quot;color:#ff6b6b;&quot;&gt;NFR-9  Fault Tolerance:&lt;/b&gt; &amp;nbsp; Rate limiter fails open; WebSocket auto-reconnects after 2s&#xa;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="2930" y="200" width="1440" height="240" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================== -->
+        <!-- SECTION 4: CORE ENTITIES / DB SCHEMA           -->
+        <!-- ============================================== -->
+        <mxCell id="entity-header" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0f3460;strokeColor=#16213e;arcSize=12;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="490" width="1400" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="entity-header-text" value="&lt;font style=&quot;font-size:18px;font-weight:bold;color:#e94560;&quot;&gt;🗄️ CORE ENTITIES / DATABASE SCHEMA&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="20" y="490" width="1400" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="entity-body" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#16213e;strokeColor=#1a1a2e;arcSize=8;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="540" width="1400" height="420" as="geometry" />
+        </mxCell>
+
+        <!-- Paste Table -->
+        <mxCell id="paste-table-header" value="&lt;font style=&quot;font-size:15px;font-weight:bold;color:#00d2ff;&quot;&gt;📄 pastes&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;color:#a7a7c4;&quot;&gt;Primary table — stores all paste data&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="570" width="620" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="paste-table-body" value="&lt;div style=&quot;text-align:left;padding:10px;font-family:monospace;font-size:12px;line-height:2.2;color:#e0e0e0;&quot;&gt;&#xa;&lt;span style=&quot;color:#ffcc00;&quot;&gt;PK&lt;/span&gt; &amp;nbsp; &lt;b style=&quot;color:#53d769;&quot;&gt;id&lt;/b&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; TEXT &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; PRIMARY KEY (5-char alphanumeric, collision-safe)&#xa;&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;b style=&quot;color:#53d769;&quot;&gt;content&lt;/b&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; TEXT &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; NOT NULL — the paste body&#xa;&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;b style=&quot;color:#53d769;&quot;&gt;language&lt;/b&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; TEXT &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; NOT NULL — programming language tag&#xa;&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;b style=&quot;color:#53d769;&quot;&gt;created_at&lt;/b&gt; &amp;nbsp;&amp;nbsp; TIMESTAMP &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; NOT NULL DEFAULT NOW()&#xa;&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;b style=&quot;color:#53d769;&quot;&gt;expire_at&lt;/b&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp; TIMESTAMP &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; NULLABLE — NULL means "never expires"&#xa;&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;b style=&quot;color:#53d769;&quot;&gt;views&lt;/b&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; INT &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; NOT NULL DEFAULT 0&#xa;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=8;align=left;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="60" y="630" width="620" height="200" as="geometry" />
+        </mxCell>
+
+        <!-- Go Struct -->
+        <mxCell id="go-struct-header" value="&lt;font style=&quot;font-size:15px;font-weight:bold;color:#00d2ff;&quot;&gt;🔧 Go Struct: db.Paste&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;color:#a7a7c4;&quot;&gt;internal/db/repo.go&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="720" y="570" width="660" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="go-struct-body" value="&lt;div style=&quot;text-align:left;padding:10px;font-family:monospace;font-size:12px;line-height:2.0;color:#e0e0e0;&quot;&gt;&#xa;&lt;span style=&quot;color:#ff79c6;&quot;&gt;type&lt;/span&gt; &lt;b style=&quot;color:#8be9fd;&quot;&gt;Paste&lt;/b&gt; &lt;span style=&quot;color:#ff79c6;&quot;&gt;struct&lt;/span&gt; {&#xa;&lt;br&gt;&amp;nbsp;&amp;nbsp; ID &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;span style=&quot;color:#53d769;&quot;&gt;string&lt;/span&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;span style=&quot;color:#a7a7c4;&quot;&gt;`json:&amp;quot;id&amp;quot;`&lt;/span&gt;&#xa;&lt;br&gt;&amp;nbsp;&amp;nbsp; Content &amp;nbsp;&amp;nbsp; &lt;span style=&quot;color:#53d769;&quot;&gt;string&lt;/span&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;span style=&quot;color:#a7a7c4;&quot;&gt;`json:&amp;quot;content&amp;quot;`&lt;/span&gt;&#xa;&lt;br&gt;&amp;nbsp;&amp;nbsp; Language &amp;nbsp; &lt;span style=&quot;color:#53d769;&quot;&gt;string&lt;/span&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;span style=&quot;color:#a7a7c4;&quot;&gt;`json:&amp;quot;language&amp;quot;`&lt;/span&gt;&#xa;&lt;br&gt;&amp;nbsp;&amp;nbsp; CreatedAt &lt;span style=&quot;color:#53d769;&quot;&gt;time.Time&lt;/span&gt; &amp;nbsp; &lt;span style=&quot;color:#a7a7c4;&quot;&gt;`json:&amp;quot;created_at&amp;quot;`&lt;/span&gt;&#xa;&lt;br&gt;&amp;nbsp;&amp;nbsp; ExpireAt &amp;nbsp; &lt;span style=&quot;color:#53d769;&quot;&gt;*time.Time&lt;/span&gt; &lt;span style=&quot;color:#a7a7c4;&quot;&gt;`json:&amp;quot;expire_at,omitempty&amp;quot;`&lt;/span&gt;&#xa;&lt;br&gt;&amp;nbsp;&amp;nbsp; Views &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;span style=&quot;color:#53d769;&quot;&gt;int&lt;/span&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;span style=&quot;color:#a7a7c4;&quot;&gt;`json:&amp;quot;views&amp;quot;`&lt;/span&gt;&#xa;&lt;br&gt;}&#xa;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=8;align=left;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="720" y="630" width="660" height="200" as="geometry" />
+        </mxCell>
+
+        <!-- Interfaces -->
+        <mxCell id="interfaces-header" value="&lt;font style=&quot;font-size:15px;font-weight:bold;color:#00d2ff;&quot;&gt;🔌 Interfaces (Dependency Injection)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="850" width="1320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="interfaces-body" value="&lt;div style=&quot;text-align:left;padding:12px;font-family:monospace;font-size:12px;line-height:1.9;color:#e0e0e0;&quot;&gt;&#xa;&lt;b style=&quot;color:#ffcc00;&quot;&gt;Repository Interface&lt;/b&gt; (internal/db/repo.go)&#xa;&lt;br&gt;&amp;nbsp;&amp;nbsp; CreatePaste(p *Paste) error&#xa;&lt;br&gt;&amp;nbsp;&amp;nbsp; UpdatePaste(p *Paste) error&#xa;&lt;br&gt;&amp;nbsp;&amp;nbsp; UpdateViews(p *Paste, count int) error&#xa;&lt;br&gt;&amp;nbsp;&amp;nbsp; GetPaste(id string) (*Paste, error)&#xa;&lt;br&gt;&amp;nbsp;&amp;nbsp; DeleteExpired() error&#xa;&lt;br&gt;&lt;br&gt;&#xa;&lt;b style=&quot;color:#ffcc00;&quot;&gt;PasteService Interface&lt;/b&gt; (internal/paste/pasteService.go)&#xa;&lt;br&gt;&amp;nbsp;&amp;nbsp; CreatePaste(content, lang string, expireMinutes int) (*Paste, error)&#xa;&lt;br&gt;&amp;nbsp;&amp;nbsp; GetPaste(id string) (*Paste, error)&#xa;&lt;br&gt;&amp;nbsp;&amp;nbsp; GetContent(id string) (string, error)&#xa;&lt;br&gt;&amp;nbsp;&amp;nbsp; UpdatePaste(id, content, lang string) (*Paste, error)&#xa;&lt;br&gt;&amp;nbsp;&amp;nbsp; UpdateViews(id string, count int) (*Paste, error)&#xa;&lt;br&gt;&amp;nbsp;&amp;nbsp; DeleteExpiredPastes() error&#xa;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=8;align=left;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="60" y="900" width="1320" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================== -->
+        <!-- SECTION 5: API DESIGN                          -->
+        <!-- ============================================== -->
+        <mxCell id="api-header" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0f3460;strokeColor=#16213e;arcSize=12;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="1460" y="490" width="2920" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="api-header-text" value="&lt;font style=&quot;font-size:18px;font-weight:bold;color:#e94560;&quot;&gt;🌐 API DESIGN&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1460" y="490" width="2920" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="api-body" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#16213e;strokeColor=#1a1a2e;arcSize=8;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="1460" y="540" width="2920" height="420" as="geometry" />
+        </mxCell>
+
+        <!-- API Endpoint 1: POST /api/pastes -->
+        <mxCell id="api1-method" value="&lt;font style=&quot;font-size:12px;font-weight:bold;color:#fff;&quot;&gt;POST&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#53d769;strokeColor=none;arcSize=20;" vertex="1" parent="1">
+          <mxGeometry x="1490" y="560" width="60" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="api1-path" value="&lt;font style=&quot;font-size:13px;font-weight:bold;color:#e0e0e0;font-family:monospace;&quot;&gt;/api/pastes&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1560" y="560" width="200" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="api1-desc" value="&lt;font style=&quot;font-size:11px;color:#a7a7c4;&quot;&gt;Create a new paste&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1780" y="560" width="200" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="api1-req" value="&lt;div style=&quot;text-align:left;font-family:monospace;font-size:11px;color:#e0e0e0;line-height:1.6;padding:5px;&quot;&gt;&#xa;&lt;b style=&quot;color:#ffcc00;&quot;&gt;Request Body:&lt;/b&gt;&#xa;&lt;br&gt;{ content: string,&#xa;&lt;br&gt;&amp;nbsp; language: string,&#xa;&lt;br&gt;&amp;nbsp; expire: &amp;quot;1h&amp;quot;|&amp;quot;24h&amp;quot;|&amp;quot;7d&amp;quot;|&amp;quot;never&amp;quot; }&#xa;&lt;br&gt;&lt;b style=&quot;color:#53d769;&quot;&gt;Response 200:&lt;/b&gt; Paste object&#xa;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=8;align=left;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="1490" y="595" width="320" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- API Endpoint 2: GET /api/pastes/:id -->
+        <mxCell id="api2-method" value="&lt;font style=&quot;font-size:12px;font-weight:bold;color:#fff;&quot;&gt;GET&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#00d2ff;strokeColor=none;arcSize=20;" vertex="1" parent="1">
+          <mxGeometry x="1850" y="560" width="60" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="api2-path" value="&lt;font style=&quot;font-size:13px;font-weight:bold;color:#e0e0e0;font-family:monospace;&quot;&gt;/api/pastes/:id&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1920" y="560" width="200" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="api2-desc" value="&lt;font style=&quot;font-size:11px;color:#a7a7c4;&quot;&gt;Retrieve paste by ID&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="2140" y="560" width="200" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="api2-req" value="&lt;div style=&quot;text-align:left;font-family:monospace;font-size:11px;color:#e0e0e0;line-height:1.6;padding:5px;&quot;&gt;&#xa;&lt;b style=&quot;color:#ffcc00;&quot;&gt;Path Param:&lt;/b&gt; :id (5-char)&#xa;&lt;br&gt;&lt;b style=&quot;color:#53d769;&quot;&gt;Response 200:&lt;/b&gt; Paste object&#xa;&lt;br&gt;&lt;b style=&quot;color:#ff6b6b;&quot;&gt;Response 404:&lt;/b&gt; paste not found&#xa;&lt;br&gt;&lt;b style=&quot;color:#ff6b6b;&quot;&gt;Response 410:&lt;/b&gt; paste has expired&#xa;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=8;align=left;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="1850" y="595" width="320" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- API Endpoint 3: GET /api/pastes/:id/raw -->
+        <mxCell id="api3-method" value="&lt;font style=&quot;font-size:12px;font-weight:bold;color:#fff;&quot;&gt;GET&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#00d2ff;strokeColor=none;arcSize=20;" vertex="1" parent="1">
+          <mxGeometry x="2210" y="560" width="60" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="api3-path" value="&lt;font style=&quot;font-size:13px;font-weight:bold;color:#e0e0e0;font-family:monospace;&quot;&gt;/api/pastes/:id/raw&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="2280" y="560" width="240" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="api3-req" value="&lt;div style=&quot;text-align:left;font-family:monospace;font-size:11px;color:#e0e0e0;line-height:1.6;padding:5px;&quot;&gt;&#xa;&lt;b style=&quot;color:#ffcc00;&quot;&gt;Path Param:&lt;/b&gt; :id&#xa;&lt;br&gt;&lt;b style=&quot;color:#53d769;&quot;&gt;Response 200:&lt;/b&gt; Raw string content&#xa;&lt;br&gt;&lt;font style=&quot;color:#a7a7c4;&quot;&gt;Used by CLI / curl for plain text&lt;/font&gt;&#xa;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=8;align=left;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="2210" y="595" width="320" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- API Endpoint 4: PUT /api/pastes/:id -->
+        <mxCell id="api4-method" value="&lt;font style=&quot;font-size:12px;font-weight:bold;color:#fff;&quot;&gt;PUT&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ff9f43;strokeColor=none;arcSize=20;" vertex="1" parent="1">
+          <mxGeometry x="2570" y="560" width="60" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="api4-path" value="&lt;font style=&quot;font-size:13px;font-weight:bold;color:#e0e0e0;font-family:monospace;&quot;&gt;/api/pastes/:id&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="2640" y="560" width="200" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="api4-req" value="&lt;div style=&quot;text-align:left;font-family:monospace;font-size:11px;color:#e0e0e0;line-height:1.6;padding:5px;&quot;&gt;&#xa;&lt;b style=&quot;color:#ffcc00;&quot;&gt;Request Body:&lt;/b&gt;&#xa;&lt;br&gt;{ content: string, language?: string }&#xa;&lt;br&gt;&lt;b style=&quot;color:#53d769;&quot;&gt;Response 200:&lt;/b&gt; Updated Paste&#xa;&lt;br&gt;&lt;font style=&quot;color:#a7a7c4;&quot;&gt;Used by live editor auto-save&lt;/font&gt;&#xa;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=8;align=left;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="2570" y="595" width="320" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- API Endpoint 5: PUT /api/pastes/:id/view -->
+        <mxCell id="api5-method" value="&lt;font style=&quot;font-size:12px;font-weight:bold;color:#fff;&quot;&gt;PUT&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ff9f43;strokeColor=none;arcSize=20;" vertex="1" parent="1">
+          <mxGeometry x="2930" y="560" width="60" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="api5-path" value="&lt;font style=&quot;font-size:13px;font-weight:bold;color:#e0e0e0;font-family:monospace;&quot;&gt;/api/pastes/:id/view&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="3000" y="560" width="240" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="api5-req" value="&lt;div style=&quot;text-align:left;font-family:monospace;font-size:11px;color:#e0e0e0;line-height:1.6;padding:5px;&quot;&gt;&#xa;&lt;b style=&quot;color:#ffcc00;&quot;&gt;Path Param:&lt;/b&gt; :id&#xa;&lt;br&gt;&lt;b style=&quot;color:#53d769;&quot;&gt;Response 200:&lt;/b&gt; Paste (views+1)&#xa;&lt;br&gt;&lt;font style=&quot;color:#a7a7c4;&quot;&gt;Increment view count on page load&lt;/font&gt;&#xa;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=8;align=left;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="2930" y="595" width="320" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- API Endpoint 6: WS /api/ws/:id -->
+        <mxCell id="api6-method" value="&lt;font style=&quot;font-size:12px;font-weight:bold;color:#fff;&quot;&gt;WS&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e94560;strokeColor=none;arcSize=20;" vertex="1" parent="1">
+          <mxGeometry x="3290" y="560" width="60" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="api6-path" value="&lt;font style=&quot;font-size:13px;font-weight:bold;color:#e0e0e0;font-family:monospace;&quot;&gt;/api/ws/:id&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="3360" y="560" width="200" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="api6-req" value="&lt;div style=&quot;text-align:left;font-family:monospace;font-size:11px;color:#e0e0e0;line-height:1.6;padding:5px;&quot;&gt;&#xa;&lt;b style=&quot;color:#ffcc00;&quot;&gt;Protocol:&lt;/b&gt; WebSocket (Gorilla)&#xa;&lt;br&gt;&lt;b style=&quot;color:#53d769;&quot;&gt;Messages:&lt;/b&gt;&#xa;&lt;br&gt;{ type: &amp;quot;content_update&amp;quot;,&#xa;&lt;br&gt;&amp;nbsp; content: string }&#xa;&lt;br&gt;&lt;font style=&quot;color:#a7a7c4;&quot;&gt;Broadcasts edits to all connected&#xa;&lt;br&gt;clients on the same paste ID&#xa;&lt;br&gt;Auto-reconnects after 2s&lt;/font&gt;&#xa;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=8;align=left;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="3290" y="595" width="320" height="120" as="geometry" />
+        </mxCell>
+
+        <!-- Rate Limiting Info -->
+        <mxCell id="rate-limit-box" value="&lt;div style=&quot;text-align:left;padding:10px;font-size:12px;color:#e0e0e0;line-height:1.8;&quot;&gt;&#xa;&lt;b style=&quot;color:#ff6b6b;font-size:14px;&quot;&gt;🛡️ Rate Limiting (All Endpoints)&lt;/b&gt;&#xa;&lt;br&gt;• &lt;b style=&quot;color:#ffcc00;&quot;&gt;Algorithm:&lt;/b&gt; Sliding Window (rate-limiter-go)&#xa;&lt;br&gt;• &lt;b style=&quot;color:#ffcc00;&quot;&gt;Rate:&lt;/b&gt; 60 requests / minute / IP (configurable via RATE_LIMIT env)&#xa;&lt;br&gt;• &lt;b style=&quot;color:#ffcc00;&quot;&gt;Storage:&lt;/b&gt; In-memory (MemoryStorage)&#xa;&lt;br&gt;• &lt;b style=&quot;color:#ffcc00;&quot;&gt;Headers:&lt;/b&gt; X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, Retry-After&#xa;&lt;br&gt;• &lt;b style=&quot;color:#ffcc00;&quot;&gt;Over-limit:&lt;/b&gt; 429 Too Many Requests — &lt;b style=&quot;color:#ff6b6b;&quot;&gt;Fails open&lt;/b&gt; on limiter errors&#xa;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#e94560;arcSize=8;align=left;verticalAlign=top;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1490" y="740" width="1140" height="190" as="geometry" />
+        </mxCell>
+
+        <!-- CORS Info -->
+        <mxCell id="cors-box" value="&lt;div style=&quot;text-align:left;padding:10px;font-size:12px;color:#e0e0e0;line-height:1.8;&quot;&gt;&#xa;&lt;b style=&quot;color:#00d2ff;font-size:14px;&quot;&gt;🔒 CORS Configuration&lt;/b&gt;&#xa;&lt;br&gt;• &lt;b style=&quot;color:#ffcc00;&quot;&gt;Allowed Origins:&lt;/b&gt; paste.sumedh.app, localhost:3000, FRONTEND_URL env&#xa;&lt;br&gt;• &lt;b style=&quot;color:#ffcc00;&quot;&gt;Methods:&lt;/b&gt; GET, POST, PUT, PATCH, DELETE, OPTIONS&#xa;&lt;br&gt;• &lt;b style=&quot;color:#ffcc00;&quot;&gt;Credentials:&lt;/b&gt; Allowed&#xa;&lt;br&gt;• &lt;b style=&quot;color:#ffcc00;&quot;&gt;Max Age:&lt;/b&gt; 12 hours&#xa;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#00d2ff;arcSize=8;align=left;verticalAlign=top;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="2670" y="740" width="700" height="190" as="geometry" />
+        </mxCell>
+
+        <!-- ============================================== -->
+        <!-- SECTION 6: HIGH-LEVEL ARCHITECTURE DIAGRAM     -->
+        <!-- ============================================== -->
+        <mxCell id="arch-header" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0f3460;strokeColor=#16213e;arcSize=12;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1000" width="4360" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="arch-header-text" value="&lt;font style=&quot;font-size:18px;font-weight:bold;color:#e94560;&quot;&gt;🏗️ HIGH-LEVEL ARCHITECTURE DIAGRAM&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1000" width="4360" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="arch-body" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#16213e;strokeColor=#1a1a2e;arcSize=8;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1050" width="4360" height="700" as="geometry" />
+        </mxCell>
+
+        <!-- ====== CLIENT LAYER ====== -->
+        <mxCell id="client-label" value="&lt;font style=&quot;font-size:14px;font-weight:bold;color:#e94560;&quot;&gt;CLIENT LAYER&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1070" width="200" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Web Browser -->
+        <mxCell id="browser" value="&lt;font style=&quot;font-size:14px;font-weight:bold;color:#fff;&quot;&gt;🌐 Web Browser&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;color:#a7a7c4;&quot;&gt;paste.sumedh.app&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#00d2ff;arcSize=12;shadow=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="80" y="1110" width="200" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- CLI Client -->
+        <mxCell id="cli" value="&lt;font style=&quot;font-size:14px;font-weight:bold;color:#fff;&quot;&gt;⌨️ pasteCTL CLI&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;color:#a7a7c4;&quot;&gt;Terminal tool&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#53d769;arcSize=12;shadow=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="80" y="1220" width="200" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- ====== FRONTEND (Next.js) ====== -->
+        <mxCell id="frontend-label" value="&lt;font style=&quot;font-size:14px;font-weight:bold;color:#e94560;&quot;&gt;FRONTEND — AWS Amplify&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="470" y="1070" width="300" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="nextjs-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=8;dashed=1;dashPattern=5 3;" vertex="1" parent="1">
+          <mxGeometry x="420" y="1100" width="400" height="340" as="geometry" />
+        </mxCell>
+        <mxCell id="nextjs-title" value="&lt;font style=&quot;font-size:16px;font-weight:bold;color:#00d2ff;&quot;&gt;⚛️ Next.js App&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="520" y="1105" width="200" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="page-create" value="&lt;font style=&quot;font-size:12px;font-weight:bold;color:#fff;&quot;&gt;📝 Create Paste&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#a7a7c4;&quot;&gt;app/page.tsx&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#53d769;arcSize=12;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="1145" width="170" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="page-view" value="&lt;font style=&quot;font-size:12px;font-weight:bold;color:#fff;&quot;&gt;👁️ View/Edit Paste&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#a7a7c4;&quot;&gt;app/paste/[id]/page.tsx&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#53d769;arcSize=12;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="630" y="1145" width="170" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="comp-editor" value="&lt;font style=&quot;font-size:12px;font-weight:bold;color:#fff;&quot;&gt;✏️ CodeEditor&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#a7a7c4;&quot;&gt;Syntax highlight&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#ffcc00;arcSize=12;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="1220" width="170" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="comp-header" value="&lt;font style=&quot;font-size:12px;font-weight:bold;color:#fff;&quot;&gt;🧭 Header&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#a7a7c4;&quot;&gt;Navigation&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#ffcc00;arcSize=12;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="630" y="1220" width="170" height="55" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ws-client" value="&lt;font style=&quot;font-size:12px;font-weight:bold;color:#fff;&quot;&gt;🔌 WebSocket Client&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#a7a7c4;&quot;&gt;Auto-reconnect &amp;amp; debounced save&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#e94560;arcSize=12;shadow=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="440" y="1300" width="360" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="frontend-tech" value="&lt;font style=&quot;font-size:11px;color:#a7a7c4;&quot;&gt;React • Tailwind CSS • Lucide Icons • Sonner • date-fns&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="440" y="1370" width="360" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Arrows: Client → Frontend -->
+        <mxCell id="arrow-browser-frontend" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#00d2ff;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;" edge="1" parent="1" source="browser" target="nextjs-box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="arrow-browser-label" value="&lt;font style=&quot;font-size:10px;color:#00d2ff;&quot;&gt;HTTPS&lt;/font&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;" vertex="1" connectable="0" parent="arrow-browser-frontend">
+          <mxGeometry x="-0.2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ====== BACKEND (Go/Gin) ====== -->
+        <mxCell id="backend-label" value="&lt;font style=&quot;font-size:14px;font-weight:bold;color:#e94560;&quot;&gt;BACKEND — AWS EC2&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="1070" width="300" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="backend-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=8;dashed=1;dashPattern=5 3;" vertex="1" parent="1">
+          <mxGeometry x="960" y="1100" width="800" height="590" as="geometry" />
+        </mxCell>
+        <mxCell id="backend-title" value="&lt;font style=&quot;font-size:16px;font-weight:bold;color:#00d2ff;&quot;&gt;🚀 Go (Gin) Server :8080&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="1105" width="300" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Middleware Layer -->
+        <mxCell id="mw-cors" value="&lt;font style=&quot;font-size:12px;font-weight:bold;color:#fff;&quot;&gt;🔒 CORS Middleware&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0f3460;strokeColor=#00d2ff;arcSize=12;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="990" y="1145" width="180" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="mw-rate" value="&lt;font style=&quot;font-size:12px;font-weight:bold;color:#fff;&quot;&gt;🛡️ Rate Limiter MW&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#ff6b6b;&quot;&gt;Sliding Window 60/min/IP&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0f3460;strokeColor=#e94560;arcSize=12;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="1145" width="200" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow down from middleware -->
+        <mxCell id="mw-arrow" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#a7a7c4;strokeWidth=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1260" y="1185" as="sourcePoint" />
+            <mxPoint x="1260" y="1210" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- HTTP Handler Layer -->
+        <mxCell id="handler-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#53d769;arcSize=8;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="990" y="1210" width="750" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="handler-label" value="&lt;font style=&quot;font-size:13px;font-weight:bold;color:#53d769;&quot;&gt;📡 HTTP Handler Layer (internal/http/paste.go)&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="1210" width="400" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="handler-create" value="&lt;font style=&quot;font-size:11px;color:#e0e0e0;&quot;&gt;CreatePasteHandler&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="1240" width="145" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="handler-get" value="&lt;font style=&quot;font-size:11px;color:#e0e0e0;&quot;&gt;GetPasteHandler&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1155" y="1240" width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="handler-content" value="&lt;font style=&quot;font-size:11px;color:#e0e0e0;&quot;&gt;GetContentHandler&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1295" y="1240" width="140" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="handler-update" value="&lt;font style=&quot;font-size:11px;color:#e0e0e0;&quot;&gt;UpdatePasteHandler&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1445" y="1240" width="145" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="handler-views" value="&lt;font style=&quot;font-size:11px;color:#e0e0e0;&quot;&gt;UpdateViewsHandler&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1600" y="1240" width="130" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow: Handler → Service -->
+        <mxCell id="handler-svc-arrow" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#53d769;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1360" y="1300" as="sourcePoint" />
+            <mxPoint x="1360" y="1330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="handler-svc-label" value="&lt;font style=&quot;font-size:10px;color:#53d769;&quot;&gt;calls&lt;/font&gt;" style="edgeLabel;html=1;" vertex="1" connectable="0" parent="handler-svc-arrow">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Service Layer -->
+        <mxCell id="service-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#ffcc00;arcSize=8;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="990" y="1330" width="750" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="service-label" value="&lt;font style=&quot;font-size:13px;font-weight:bold;color:#ffcc00;&quot;&gt;⚙️ Service Layer (internal/paste/pasteService.go)&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="1330" width="420" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="svc-create" value="&lt;font style=&quot;font-size:11px;color:#e0e0e0;&quot;&gt;CreatePaste&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;color:#a7a7c4;&quot;&gt;ID gen + collision retry&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="1360" width="145" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="svc-get" value="&lt;font style=&quot;font-size:11px;color:#e0e0e0;&quot;&gt;GetPaste&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:9px;color:#a7a7c4;&quot;&gt;Expiry check&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1155" y="1360" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="svc-update" value="&lt;font style=&quot;font-size:11px;color:#e0e0e0;&quot;&gt;UpdatePaste&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1285" y="1360" width="110" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="svc-views" value="&lt;font style=&quot;font-size:11px;color:#e0e0e0;&quot;&gt;UpdateViews&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1405" y="1360" width="110" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="svc-delete" value="&lt;font style=&quot;font-size:11px;color:#e0e0e0;&quot;&gt;DeleteExpiredPastes&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1525" y="1360" width="145" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow: Service → Repo -->
+        <mxCell id="svc-repo-arrow" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#ffcc00;strokeWidth=2;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1360" y="1420" as="sourcePoint" />
+            <mxPoint x="1360" y="1450" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="svc-repo-label" value="&lt;font style=&quot;font-size:10px;color:#ffcc00;&quot;&gt;calls&lt;/font&gt;" style="edgeLabel;html=1;" vertex="1" connectable="0" parent="svc-repo-arrow">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Repository Layer -->
+        <mxCell id="repo-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#00d2ff;arcSize=8;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="990" y="1450" width="750" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="repo-label" value="&lt;font style=&quot;font-size:13px;font-weight:bold;color:#00d2ff;&quot;&gt;💾 Repository Layer (internal/db/repo.go)&lt;/font&gt;" style="text;html=1;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="1450" width="400" height="25" as="geometry" />
+        </mxCell>
+        <mxCell id="repo-create" value="&lt;font style=&quot;font-size:11px;color:#e0e0e0;&quot;&gt;CreatePaste&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="1480" width="110" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="repo-update" value="&lt;font style=&quot;font-size:11px;color:#e0e0e0;&quot;&gt;UpdatePaste&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1120" y="1480" width="110" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="repo-views" value="&lt;font style=&quot;font-size:11px;color:#e0e0e0;&quot;&gt;UpdateViews&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1240" y="1480" width="110" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="repo-get" value="&lt;font style=&quot;font-size:11px;color:#e0e0e0;&quot;&gt;GetPaste&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="1480" width="100" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="repo-delete" value="&lt;font style=&quot;font-size:11px;color:#e0e0e0;&quot;&gt;DeleteExpired&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1470" y="1480" width="110" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- WebSocket Handler -->
+        <mxCell id="ws-server-box" value="&lt;font style=&quot;font-size:13px;font-weight:bold;color:#e94560;&quot;&gt;🔌 WebSocket Handler&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;color:#a7a7c4;&quot;&gt;internal/ws/ws.go&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;color:#e0e0e0;&quot;&gt;Gorilla WebSocket · PasteHandler&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#a7a7c4;&quot;&gt;clients map[pasteID][]*websocket.Conn&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#a7a7c4;&quot;&gt;Broadcasts to all connected peers&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#e94560;arcSize=12;shadow=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="990" y="1560" width="360" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- Scheduled Job -->
+        <mxCell id="scheduler-box" value="&lt;font style=&quot;font-size:13px;font-weight:bold;color:#ff9f43;&quot;&gt;⏰ Scheduled Job&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;color:#a7a7c4;&quot;&gt;cmd/scheduledJob/scheduler.go&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;color:#e0e0e0;&quot;&gt;Goroutine • time.Ticker (2h)&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#a7a7c4;&quot;&gt;Calls DeleteExpiredPastes()&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#a7a7c4;&quot;&gt;Runs in background on startup&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#ff9f43;arcSize=12;shadow=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1380" y="1560" width="360" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow: Scheduler → Service -->
+        <mxCell id="sched-svc-arrow" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#ff9f43;strokeWidth=2;entryX=0.9;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="scheduler-box" target="service-box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="sched-svc-label" value="&lt;font style=&quot;font-size:10px;color:#ff9f43;&quot;&gt;DeleteExpiredPastes&lt;/font&gt;" style="edgeLabel;html=1;" vertex="1" connectable="0" parent="sched-svc-arrow">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ID Generator -->
+        <mxCell id="idgen-box" value="&lt;font style=&quot;font-size:12px;font-weight:bold;color:#fff;&quot;&gt;🎲 ID Generator&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#a7a7c4;&quot;&gt;pkg/idgen.go&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#e0e0e0;&quot;&gt;5-char alphanumeric&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#e0e0e0;&quot;&gt;62^5 = 916M combos&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#ff79c6;arcSize=12;shadow=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1415" y="1145" width="160" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- Rate Limiter Engine -->
+        <mxCell id="rate-engine" value="&lt;font style=&quot;font-size:12px;font-weight:bold;color:#fff;&quot;&gt;⚡ rate-limiter-go&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#a7a7c4;&quot;&gt;External library&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#e0e0e0;&quot;&gt;SlidingWindowLimiter&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#e0e0e0;&quot;&gt;MemoryStorage&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#e94560;arcSize=12;shadow=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1590" y="1145" width="145" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- ====== DATABASE ====== -->
+        <mxCell id="db-label" value="&lt;font style=&quot;font-size:14px;font-weight:bold;color:#e94560;&quot;&gt;DATA LAYER&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1950" y="1070" width="200" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="db-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=8;dashed=1;dashPattern=5 3;" vertex="1" parent="1">
+          <mxGeometry x="1900" y="1100" width="580" height="340" as="geometry" />
+        </mxCell>
+
+        <mxCell id="postgres-icon" value="&lt;font style=&quot;font-size:18px;font-weight:bold;color:#00d2ff;&quot;&gt;🐘 PostgreSQL&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:12px;color:#a7a7c4;&quot;&gt;Primary Datastore&lt;/font&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#2d3436;strokeColor=#00d2ff;arcSize=12;shadow=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="2070" y="1120" width="200" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="pgx-pool" value="&lt;font style=&quot;font-size:12px;font-weight:bold;color:#fff;&quot;&gt;🔄 pgx Connection Pool&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#a7a7c4;&quot;&gt;internal/db/db.go&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#e0e0e0;&quot;&gt;pgxpool.Pool • Parameterized queries&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#53d769;arcSize=12;shadow=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1930" y="1270" width="280" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="pastes-table" value="&lt;font style=&quot;font-size:12px;font-weight:bold;color:#fff;&quot;&gt;📄 pastes table&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#a7a7c4;&quot;&gt;id | content | language |&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#a7a7c4;&quot;&gt;created_at | expire_at | views&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#ffcc00;arcSize=12;shadow=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="2230" y="1270" width="220" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="migrations-box" value="&lt;font style=&quot;font-size:11px;font-weight:bold;color:#a7a7c4;&quot;&gt;📂 migrations/&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#a7a7c4;&quot;&gt;000001_create_pastes_table.up.sql&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#a7a7c4;&quot;&gt;000001_create_pastes_table.down.sql&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#0f3460;arcSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1930" y="1370" width="280" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow: Repo → DB -->
+        <mxCell id="repo-db-arrow" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#00d2ff;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="repo-box" target="pgx-pool">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="repo-db-label" value="&lt;font style=&quot;font-size:10px;color:#00d2ff;&quot;&gt;SQL Queries (pgx)&lt;/font&gt;" style="edgeLabel;html=1;" vertex="1" connectable="0" parent="repo-db-arrow">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Arrow: pgx → postgres -->
+        <mxCell id="pgx-pg-arrow" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#53d769;strokeWidth=2;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.35;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="pgx-pool" target="postgres-icon">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Arrow: Frontend → Backend (HTTP) -->
+        <mxCell id="fe-be-arrow" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#53d769;strokeWidth=2;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;" edge="1" parent="1" source="nextjs-box" target="backend-box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fe-be-label" value="&lt;font style=&quot;font-size:11px;font-weight:bold;color:#53d769;&quot;&gt;REST API (HTTPS)&lt;/font&gt;" style="edgeLabel;html=1;align=center;" vertex="1" connectable="0" parent="fe-be-arrow">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Arrow: Frontend → Backend (WebSocket) -->
+        <mxCell id="fe-be-ws-arrow" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#e94560;strokeWidth=2;exitX=1;exitY=0.7;exitDx=0;exitDy=0;entryX=0;entryY=0.7;entryDx=0;entryDy=0;dashed=1;dashPattern=8 4;" edge="1" parent="1" source="nextjs-box" target="backend-box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="fe-be-ws-label" value="&lt;font style=&quot;font-size:11px;font-weight:bold;color:#e94560;&quot;&gt;WebSocket (WSS)&lt;/font&gt;" style="edgeLabel;html=1;align=center;" vertex="1" connectable="0" parent="fe-be-ws-arrow">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- Arrow: CLI → Backend -->
+        <mxCell id="cli-be-arrow" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#53d769;strokeWidth=2;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.6;entryDx=0;entryDy=0;" edge="1" parent="1" source="cli" target="backend-box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="cli-be-label" value="&lt;font style=&quot;font-size:11px;font-weight:bold;color:#53d769;&quot;&gt;REST API (HTTPS)&lt;/font&gt;" style="edgeLabel;html=1;align=center;" vertex="1" connectable="0" parent="cli-be-arrow">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ====== DEPLOYMENT INFO ====== -->
+        <mxCell id="deploy-label" value="&lt;font style=&quot;font-size:14px;font-weight:bold;color:#e94560;&quot;&gt;DEPLOYMENT &amp; INFRASTRUCTURE&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="2600" y="1070" width="350" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="deploy-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=8;dashed=1;dashPattern=5 3;" vertex="1" parent="1">
+          <mxGeometry x="2550" y="1100" width="430" height="340" as="geometry" />
+        </mxCell>
+
+        <mxCell id="aws-amp" value="&lt;font style=&quot;font-size:14px;font-weight:bold;color:#fff;&quot;&gt;☁️ AWS Amplify&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;color:#a7a7c4;&quot;&gt;Frontend Hosting&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;color:#53d769;&quot;&gt;paste.sumedh.app&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#a7a7c4;&quot;&gt;Auto-deploy on push to main&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#ff9f43;arcSize=12;shadow=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="2580" y="1120" width="190" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="aws-ec2" value="&lt;font style=&quot;font-size:14px;font-weight:bold;color:#fff;&quot;&gt;🖥️ AWS EC2&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;color:#a7a7c4;&quot;&gt;Backend Server&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;color:#53d769;&quot;&gt;Go binary :8080&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#a7a7c4;&quot;&gt;PostgreSQL co-located&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#ff9f43;arcSize=12;shadow=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="2780" y="1120" width="180" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="docker-box" value="&lt;font style=&quot;font-size:12px;font-weight:bold;color:#fff;&quot;&gt;🐳 Docker&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#a7a7c4;&quot;&gt;Dockerfile in backend/&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#e0e0e0;&quot;&gt;Containerized deployment&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#00d2ff;arcSize=12;shadow=1;" vertex="1" parent="1">
+          <mxGeometry x="2580" y="1250" width="370" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="env-vars" value="&lt;div style=&quot;text-align:left;padding:8px;font-size:11px;color:#e0e0e0;line-height:1.6;&quot;&gt;&#xa;&lt;b style=&quot;color:#ffcc00;&quot;&gt;Environment Variables:&lt;/b&gt;&#xa;&lt;br&gt;• DATABASE_URL — PostgreSQL connection string&#xa;&lt;br&gt;• FRONTEND_URL — Frontend URL for CORS&#xa;&lt;br&gt;• RATE_LIMIT — Requests per minute (default: 60)&#xa;&lt;br&gt;• NEXT_PUBLIC_BACKEND_URL — API base URL&#xa;&lt;br&gt;• NEXT_PUBLIC_WS_URL — WebSocket base URL&#xa;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#0f3460;arcSize=8;align=left;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="2580" y="1330" width="370" height="100" as="geometry" />
+        </mxCell>
+
+        <!-- ====== TESTING INFO ====== -->
+        <mxCell id="test-label" value="&lt;font style=&quot;font-size:14px;font-weight:bold;color:#e94560;&quot;&gt;TESTING STRATEGY&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="3100" y="1070" width="300" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="test-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=8;dashed=1;dashPattern=5 3;" vertex="1" parent="1">
+          <mxGeometry x="3040" y="1100" width="450" height="340" as="geometry" />
+        </mxCell>
+
+        <mxCell id="test-unit" value="&lt;font style=&quot;font-size:13px;font-weight:bold;color:#53d769;&quot;&gt;✅ Unit Tests&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;color:#e0e0e0;&quot;&gt;tests/http_test/ — Mocked services&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#a7a7c4;&quot;&gt;Handler validation, error paths&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#53d769;arcSize=12;shadow=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="3070" y="1120" width="390" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="test-integration" value="&lt;font style=&quot;font-size:13px;font-weight:bold;color:#00d2ff;&quot;&gt;🧪 Integration Tests&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;color:#e0e0e0;&quot;&gt;tests/db_test/ — Testcontainers (PostgreSQL)&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;color:#e0e0e0;&quot;&gt;tests/service_test/ — Full service flow&lt;/font&gt;&lt;br&gt;&lt;font style=&quot;font-size:10px;color:#a7a7c4;&quot;&gt;Real DB, end-to-end queries&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#00d2ff;arcSize=12;shadow=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="3070" y="1210" width="390" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="test-cmd" value="&lt;div style=&quot;text-align:left;padding:8px;font-family:monospace;font-size:11px;color:#e0e0e0;line-height:1.7;&quot;&gt;&#xa;&lt;b style=&quot;color:#ffcc00;&quot;&gt;Commands:&lt;/b&gt;&#xa;&lt;br&gt;&lt;span style=&quot;color:#53d769;&quot;&gt;$&lt;/span&gt; go test ./...&#xa;&lt;br&gt;&lt;span style=&quot;color:#53d769;&quot;&gt;$&lt;/span&gt; go test -cover ./...&#xa;&lt;br&gt;&lt;span style=&quot;color:#53d769;&quot;&gt;$&lt;/span&gt; go test ./internal/db/...&#xa;&lt;br&gt;&lt;span style=&quot;color:#53d769;&quot;&gt;$&lt;/span&gt; go test ./internal/http/...&#xa;&lt;br&gt;&lt;span style=&quot;color:#53d769;&quot;&gt;$&lt;/span&gt; go test ./internal/paste/...&#xa;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#0f3460;arcSize=8;align=left;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="3070" y="1310" width="390" height="110" as="geometry" />
+        </mxCell>
+
+        <!-- ====== DATA FLOW LEGEND ====== -->
+        <mxCell id="legend-box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=8;" vertex="1" parent="1">
+          <mxGeometry x="3560" y="1100" width="800" height="340" as="geometry" />
+        </mxCell>
+        <mxCell id="legend-title" value="&lt;font style=&quot;font-size:14px;font-weight:bold;color:#e94560;&quot;&gt;🔄 DATA FLOW — CREATE PASTE&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="3560" y="1070" width="300" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="flow-content" value="&lt;div style=&quot;text-align:left;padding:15px;font-size:12px;color:#e0e0e0;line-height:2.2;&quot;&gt;&#xa;&lt;b style=&quot;color:#00d2ff;&quot;&gt;1.&lt;/b&gt; User types code in &lt;b&gt;CodeEditor&lt;/b&gt; component → selects language &amp;amp; expiry&#xa;&lt;br&gt;&lt;b style=&quot;color:#00d2ff;&quot;&gt;2.&lt;/b&gt; Frontend sends &lt;b style=&quot;color:#53d769;&quot;&gt;POST /api/pastes&lt;/b&gt; with { content, language, expire }&#xa;&lt;br&gt;&lt;b style=&quot;color:#00d2ff;&quot;&gt;3.&lt;/b&gt; &lt;b style=&quot;color:#ff6b6b;&quot;&gt;Rate Limiter MW&lt;/b&gt; checks IP against sliding window (60/min)&#xa;&lt;br&gt;&lt;b style=&quot;color:#00d2ff;&quot;&gt;4.&lt;/b&gt; &lt;b&gt;CreatePasteHandler&lt;/b&gt; validates &amp;amp; parses expiry → calls Service&#xa;&lt;br&gt;&lt;b style=&quot;color:#00d2ff;&quot;&gt;5.&lt;/b&gt; &lt;b&gt;PasteService.CreatePaste&lt;/b&gt; generates 5-char ID (retry up to 5x on collision)&#xa;&lt;br&gt;&lt;b style=&quot;color:#00d2ff;&quot;&gt;6.&lt;/b&gt; &lt;b&gt;Repository.CreatePaste&lt;/b&gt; executes INSERT via pgx connection pool&#xa;&lt;br&gt;&lt;b style=&quot;color:#00d2ff;&quot;&gt;7.&lt;/b&gt; Response returned → frontend redirects to &lt;b&gt;/paste/:id&lt;/b&gt;&#xa;&lt;br&gt;&lt;b style=&quot;color:#00d2ff;&quot;&gt;8.&lt;/b&gt; &lt;b style=&quot;color:#e94560;&quot;&gt;WebSocket&lt;/b&gt; connection opens for live collaborative editing&#xa;&lt;br&gt;&lt;b style=&quot;color:#00d2ff;&quot;&gt;9.&lt;/b&gt; Edits broadcast to all peers &amp;amp; debounced auto-save to backend (1s)&#xa;&lt;br&gt;&lt;b style=&quot;color:#00d2ff;&quot;&gt;10.&lt;/b&gt; &lt;b style=&quot;color:#ff9f43;&quot;&gt;Scheduler goroutine&lt;/b&gt; runs every 2h → purges expired pastes&#xa;&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="3570" y="1110" width="780" height="320" as="geometry" />
+        </mxCell>
+
+        <!-- ====== PROJECT STRUCTURE ====== -->
+        <mxCell id="structure-label" value="&lt;font style=&quot;font-size:14px;font-weight:bold;color:#e94560;&quot;&gt;📁 PROJECT STRUCTURE&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="2550" y="1470" width="300" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="structure-box" value="&lt;div style=&quot;text-align:left;padding:15px;font-family:monospace;font-size:11px;color:#e0e0e0;line-height:1.7;&quot;&gt;&#xa;&lt;b style=&quot;color:#00d2ff;&quot;&gt;pasteCTL/&lt;/b&gt;&#xa;&lt;br&gt;├── &lt;b style=&quot;color:#ff9f43;&quot;&gt;backend/&lt;/b&gt;&#xa;&lt;br&gt;│ &amp;nbsp; ├── &lt;b style=&quot;color:#ffcc00;&quot;&gt;cmd/&lt;/b&gt;&#xa;&lt;br&gt;│ &amp;nbsp; │ &amp;nbsp; ├── main.go &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;span style=&quot;color:#a7a7c4;&quot;&gt;# Entry point, router setup&lt;/span&gt;&#xa;&lt;br&gt;│ &amp;nbsp; │ &amp;nbsp; └── scheduledJob/ &amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;span style=&quot;color:#a7a7c4;&quot;&gt;# Background cleanup goroutine&lt;/span&gt;&#xa;&lt;br&gt;│ &amp;nbsp; ├── &lt;b style=&quot;color:#ffcc00;&quot;&gt;internal/&lt;/b&gt;&#xa;&lt;br&gt;│ &amp;nbsp; │ &amp;nbsp; ├── db/ &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;span style=&quot;color:#a7a7c4;&quot;&gt;# DB init, connection pool, Repository&lt;/span&gt;&#xa;&lt;br&gt;│ &amp;nbsp; │ &amp;nbsp; ├── http/ &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;span style=&quot;color:#a7a7c4;&quot;&gt;# Gin HTTP handlers&lt;/span&gt;&#xa;&lt;br&gt;│ &amp;nbsp; │ &amp;nbsp; ├── paste/ &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;span style=&quot;color:#a7a7c4;&quot;&gt;# Business logic / PasteService&lt;/span&gt;&#xa;&lt;br&gt;│ &amp;nbsp; │ &amp;nbsp; ├── ws/ &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;span style=&quot;color:#a7a7c4;&quot;&gt;# WebSocket handler (Gorilla)&lt;/span&gt;&#xa;&lt;br&gt;│ &amp;nbsp; │ &amp;nbsp; └── middleware/ &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;span style=&quot;color:#a7a7c4;&quot;&gt;# Rate limiter middleware&lt;/span&gt;&#xa;&lt;br&gt;│ &amp;nbsp; ├── &lt;b style=&quot;color:#ffcc00;&quot;&gt;pkg/&lt;/b&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;span style=&quot;color:#a7a7c4;&quot;&gt;# Shared utilities (ID generator)&lt;/span&gt;&#xa;&lt;br&gt;│ &amp;nbsp; ├── &lt;b style=&quot;color:#ffcc00;&quot;&gt;migrations/&lt;/b&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;span style=&quot;color:#a7a7c4;&quot;&gt;# SQL migration files&lt;/span&gt;&#xa;&lt;br&gt;│ &amp;nbsp; ├── &lt;b style=&quot;color:#ffcc00;&quot;&gt;tests/&lt;/b&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;span style=&quot;color:#a7a7c4;&quot;&gt;# db_test, http_test, service_test&lt;/span&gt;&#xa;&lt;br&gt;│ &amp;nbsp; └── Dockerfile&#xa;&lt;br&gt;├── &lt;b style=&quot;color:#ff9f43;&quot;&gt;frontend/&lt;/b&gt;&#xa;&lt;br&gt;│ &amp;nbsp; ├── app/ &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;span style=&quot;color:#a7a7c4;&quot;&gt;# Next.js pages (page.tsx, paste/[id])&lt;/span&gt;&#xa;&lt;br&gt;│ &amp;nbsp; ├── components/ &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;span style=&quot;color:#a7a7c4;&quot;&gt;# CodeEditor, Header, UI primitives&lt;/span&gt;&#xa;&lt;br&gt;│ &amp;nbsp; └── tailwind.config.ts&#xa;&lt;br&gt;└── README.md&#xa;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#0f3460;arcSize=8;align=left;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="2550" y="1500" width="1810" height="250" as="geometry" />
+        </mxCell>
+
+        <!-- ====== TECH STACK SUMMARY ====== -->
+        <mxCell id="tech-label" value="&lt;font style=&quot;font-size:14px;font-weight:bold;color:#e94560;&quot;&gt;🛠️ TECH STACK SUMMARY&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1470" width="300" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tech-fe" value="&lt;font style=&quot;font-size:14px;font-weight:bold;color:#00d2ff;&quot;&gt;Frontend&lt;/font&gt;&lt;br&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;color:#e0e0e0;&quot;&gt;Next.js · React · TypeScript&lt;br&gt;Tailwind CSS · Lucide React&lt;br&gt;Sonner (toast) · date-fns&lt;br&gt;ShadCN UI Components&lt;br&gt;AWS Amplify (hosting)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#00d2ff;arcSize=12;shadow=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1510" width="220" height="180" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tech-be" value="&lt;font style=&quot;font-size:14px;font-weight:bold;color:#53d769;&quot;&gt;Backend&lt;/font&gt;&lt;br&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;color:#e0e0e0;&quot;&gt;Go 1.24 · Gin Framework&lt;br&gt;pgx/v5 (PostgreSQL driver)&lt;br&gt;Gorilla WebSocket&lt;br&gt;godotenv · rate-limiter-go&lt;br&gt;AWS EC2 · Docker&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#53d769;arcSize=12;shadow=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="300" y="1510" width="220" height="180" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tech-db" value="&lt;font style=&quot;font-size:14px;font-weight:bold;color:#ffcc00;&quot;&gt;Database&lt;/font&gt;&lt;br&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;color:#e0e0e0;&quot;&gt;PostgreSQL&lt;br&gt;pgxpool (connection pool)&lt;br&gt;SQL migrations&lt;br&gt;Parameterized queries&lt;br&gt;Testcontainers (testing)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#ffcc00;arcSize=12;shadow=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="540" y="1510" width="220" height="180" as="geometry" />
+        </mxCell>
+
+        <mxCell id="tech-infra" value="&lt;font style=&quot;font-size:14px;font-weight:bold;color:#e94560;&quot;&gt;Security&lt;/font&gt;&lt;br&gt;&lt;br&gt;&lt;font style=&quot;font-size:11px;color:#e0e0e0;&quot;&gt;CORS whitelist&lt;br&gt;Rate limiting (sliding window)&lt;br&gt;Parameterized SQL queries&lt;br&gt;Auto-expiry of content&lt;br&gt;Input validation&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#2d3436;strokeColor=#e94560;arcSize=12;shadow=1;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="780" y="1510" width="220" height="180" as="geometry" />
+        </mxCell>
+
+        <!-- Footer -->
+        <mxCell id="footer-bg" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#1a1a2e;strokeColor=#16213e;arcSize=8;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1770" width="4360" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="footer-text" value="&lt;font style=&quot;font-size:12px;color:#a7a7c4;&quot;&gt;PasteCTL System Design — &lt;b style=&quot;color:#e94560;&quot;&gt;paste.sumedh.app&lt;/b&gt; — Built with Go + Next.js + PostgreSQL — Made with ❤️ by Sumedh&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1770" width="4360" height="40" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
